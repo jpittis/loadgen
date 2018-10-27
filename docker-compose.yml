@@ -1,0 +1,26 @@
+version: "2"
+services:
+  app:
+    image: golang:1.9-alpine
+    working_dir: /go/src/github.com/jpittis/loadgen
+    command: sh -c "go build && ./loadgen"
+    volumes:
+    - .:/go/src/github.com/jpittis/loadgen
+    ports:
+    - "8080:8080"
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+    - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:3.0.0-beta7
+    depends_on:
+    - prometheus
+    volumes:
+    - ./grafana-storage:/var/lib/grafana
+    ports:
+    - "3000:3000"
